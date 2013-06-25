@@ -2,10 +2,12 @@ package org.shade.scripts.lrc.nodes;
 
 import org.powerbot.core.script.job.Task;
 import org.powerbot.core.script.job.state.Node;
+import org.powerbot.game.api.methods.Walking;
 import org.powerbot.game.api.methods.interactive.Players;
 import org.powerbot.game.api.methods.tab.Inventory;
 import org.powerbot.game.api.methods.tab.Skills;
 import org.powerbot.game.api.methods.tab.Summoning;
+import org.powerbot.game.api.wrappers.Tile;
 import org.powerbot.game.api.wrappers.node.Item;
 import org.shade.scripts.lrc.misc.Variables;
 
@@ -19,6 +21,8 @@ public class Summon extends Node {
 	@Override
 	public void execute() {
 		Variables.status = "Summoning";
+        Walking.walk(new Tile(3658, 5094, 0));
+        Task.sleep(500, 600);
 		if(Skills.getRealLevel(Skills.SUMMONING) >= 83) {
 			if(Summoning.getPoints() > 8 && Inventory.getItem(Variables.LAVA_TITAN_POUCH_ID) != null) {
 				Summoning.summonFamiliar(Summoning.Familiar.LAVA_TITAN);

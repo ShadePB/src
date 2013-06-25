@@ -2,7 +2,7 @@ package org.shade.scripts.lrc.nodes;
 
 import org.powerbot.core.script.job.Task;
 import org.powerbot.core.script.job.state.Node;
-import org.powerbot.core.script.util.Timer;
+import org.powerbot.game.api.util.Timer;
 import org.powerbot.game.api.methods.Calculations;
 import org.powerbot.game.api.methods.Walking;
 import org.powerbot.game.api.methods.interactive.Players;
@@ -51,14 +51,11 @@ public class Mine extends Node {
 
 	@Override
 	public boolean activate() {
-        if(!Variables.needToBank) {
-            if(Variables.banking) {
-                return !ShadeLRC.fullInventory() && (Combat.getRock() == null || !Players.getLocal().isInCombat());
-            } else {
-                return Inventory.getCount() < 21 && (Combat.getRock() == null || !Players.getLocal().isInCombat());
-            }
+        if(Variables.banking) {
+            return !ShadeLRC.fullInventory() && (Combat.getRock() == null || !Players.getLocal().isInCombat());
+        } else {
+            return Inventory.getCount() < 21 && (Combat.getRock() == null || !Players.getLocal().isInCombat());
         }
-        return false;
 	}
 
 	@Override
@@ -172,6 +169,11 @@ public class Mine extends Node {
 			}
 		} else {
 			Variables.status = "Mining";
+            if(Variables.usingSuperheat) {
+                if(Inventory.getItem(Variables.GOLD_ORE_ID) != null) {
+                    Superheat.superheat();
+                }
+            }
 			int randomNum = Random.nextInt(1, 22);
 			if(randomNum == 10) {
 				//Rewriting antiban

@@ -2,7 +2,7 @@ package org.shade.scripts.lrc.nodes;
 
 import org.powerbot.core.script.job.Task;
 import org.powerbot.core.script.job.state.Node;
-import org.powerbot.core.script.util.Timer;
+import org.powerbot.game.api.util.Timer;
 import org.powerbot.game.api.methods.Walking;
 import org.powerbot.game.api.methods.interactive.Players;
 import org.powerbot.game.api.methods.node.SceneEntities;
@@ -37,6 +37,10 @@ public class Deposit extends Node {
 					Task.sleep(500, 600);
 					DepositBox.deposit(Variables.GOLD_ORE_ID, 0);
 					Task.sleep(500, 600);
+                    if(Variables.usingSuperheat) {
+                        DepositBox.deposit(Variables.GOLD_BAR_ID, 0);
+                        Task.sleep(500, 600);
+                    }
 				} else {
 					DepositBox.depositInventory();
 					Task.sleep(500, 600);
@@ -66,25 +70,44 @@ public class Deposit extends Node {
 		} else {
 			Variables.status = "Dropping";
 			ActionBar.makeReadyForInteract();
-			for(int i = 0; i < 12; i++){
-				if(Inventory.getCount(Variables.GOLD_ORE_ID) > 0) {
-	                if(ActionBar.getItemId(i) == Variables.GOLD_ORE_ID){
-	                	Timer failSafe = new Timer(15000);
-	                	while(Inventory.getCount(Variables.GOLD_ORE_ID) != 0 && failSafe.isRunning()) {
-	                		ActionBar.useSlot(i);
-	                		Task.sleep(50, 60);
-	                	}
-	                }
-				} if(Inventory.getCount(Variables.COAL_ORE_ID) > 0) {
-	                if(ActionBar.getItemId(i) == Variables.COAL_ORE_ID){
-	                	Timer failSafe = new Timer(15000);
-	                	while(Inventory.getCount(Variables.COAL_ORE_ID) != 0 && failSafe.isRunning()) {
-	                		ActionBar.useSlot(i);
-	                		Task.sleep(50, 60);
-	                	}
-	                }
-				}
-			}
+            if(Variables.usingSuperheat && Inventory.getItem(Variables.GOLD_ORE_ID) != null) {
+                Timer failSafe = new Timer(15000);
+                while(Inventory.getCount(Variables.GOLD_ORE_ID) > 0 && failSafe.isRunning()) {
+                    Superheat.superheat();
+                }
+            } else {
+                for(int i = 0; i < 12; i++){
+                    if(Inventory.getItem(2357) != null) {
+                        if(ActionBar.getItemId(i) == 2357){
+                            Timer failSafe = new Timer(15000);
+                            while(Inventory.getCount(2357) != 0 && failSafe.isRunning()) {
+                                ActionBar.useSlot(i);
+                                Task.sleep(50, 60);
+                            }
+                        }
+                    }
+                }  for(int i = 0; i < 12; i++){
+                    if(Inventory.getItem(Variables.GOLD_ORE_ID) != null) {
+                            if(ActionBar.getItemId(i) == Variables.GOLD_ORE_ID){
+                                Timer failSafe = new Timer(15000);
+                                while(Inventory.getCount(Variables.GOLD_ORE_ID) != 0 && failSafe.isRunning()) {
+                                    ActionBar.useSlot(i);
+                                    Task.sleep(50, 60);
+                                }
+                            }
+                        }
+                } for(int i = 0; i < 12; i++){
+                    if(Inventory.getItem(Variables.COAL_ORE_ID) != null) {
+                            if(ActionBar.getItemId(i) == Variables.COAL_ORE_ID){
+                                Timer failSafe = new Timer(15000);
+                                while(Inventory.getCount(Variables.COAL_ORE_ID) != 0 && failSafe.isRunning()) {
+                                    ActionBar.useSlot(i);
+                                    Task.sleep(50, 60);
+                                }
+                            }
+                        }
+                }
+            }
 		}
 	}
 

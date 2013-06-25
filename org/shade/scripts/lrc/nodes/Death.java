@@ -9,10 +9,12 @@ import org.powerbot.game.api.methods.node.SceneEntities;
 import org.powerbot.game.api.methods.tab.Inventory;
 import org.powerbot.game.api.methods.tab.Skills;
 import org.powerbot.game.api.methods.tab.Summoning;
+import org.powerbot.game.api.util.Timer;
 import org.powerbot.game.api.wrappers.Area;
 import org.powerbot.game.api.wrappers.Tile;
 import org.powerbot.game.api.wrappers.node.Item;
 import org.powerbot.game.api.wrappers.node.SceneObject;
+import org.shade.scripts.lrc.ShadeLRC;
 import org.shade.scripts.lrc.misc.Magic;
 import org.shade.scripts.lrc.misc.Variables;
 import sk.action.book.magic.Spell;
@@ -31,93 +33,101 @@ public class Death extends Node {
 
     @Override
     public boolean activate() {
-        return Players.getLocal().getLocation().getY() < 5000 || Players.getLocal().getLocation().getY() > 5300 && !Variables.needToBank;
+        return Players.getLocal().getLocation().getY() < 5000 || Players.getLocal().getLocation().getY() > 5300;
     }
 
     @Override
     public void execute() {
-        Variables.status = "Traversing [LRC]";
-        Item pick = Inventory.getItem(Variables.PICKAXE_IDS);
-        if(pick != null) {
-            if(pick.getId() == 15259) {
-                if(Skills.getLevel(Skills.ATTACK) > 59) {
-                    pick.getWidgetChild().click(true);
-                    Task.sleep(500, 600);
-                }
-            } else {
-                if(Skills.getLevel(Skills.ATTACK) > 49) {
-                    pick.getWidgetChild().click(true);
-                    Task.sleep(500, 600);
-                }
+        if(Widgets.get(18, 0).validate()) {
+            Variables.status = "Closing death screen";
+            Widgets.get(18, 34).click(true);
+            Timer failSafe = new Timer(4000);
+            while(Widgets.get(18, 0).validate() && failSafe.isRunning()) {
+                Task.sleep(500, 600);
             }
-        }
-        if(Players.getLocal().getLocation().getY() > 9000) {
-            SceneObject rope = SceneEntities.getNearest(45077);
-            if(rope != null) {
-                if(rope.isOnScreen()) {
-                    if(rope.interact("Climb")) {
+        } else {
+            Variables.status = "Traversing [LRC]";
+            Item pick = Inventory.getItem(Variables.PICKAXE_IDS);
+            if(pick != null) {
+                if(pick.getId() == 15259) {
+                    if(Skills.getLevel(Skills.ATTACK) > 59) {
+                        pick.getWidgetChild().click(true);
                         Task.sleep(500, 600);
-                        while(Players.getLocal().isMoving() || Players.getLocal().getAnimation() != -1) {
-                            Task.sleep(50, 60);
+                    }
+                } else {
+                    if(Skills.getLevel(Skills.ATTACK) > 49) {
+                        pick.getWidgetChild().click(true);
+                        Task.sleep(500, 600);
+                    }
+                }
+            } if(Players.getLocal().getLocation().getY() > 9000) {
+                SceneObject rope = SceneEntities.getNearest(45077);
+                if(rope != null) {
+                    if(rope.isOnScreen()) {
+                        if(rope.interact("Climb")) {
+                            Task.sleep(500, 600);
+                            while(Players.getLocal().isMoving() || Players.getLocal().getAnimation() != -1) {
+                                Task.sleep(50, 60);
+                            }
                         }
+                    } else {
+                        Walking.walk(new Tile(3012, 9832, 0));
+                        Task.sleep(500, 600);
                     }
                 } else {
                     Walking.walk(new Tile(3012, 9832, 0));
                     Task.sleep(500, 600);
                 }
             } else {
-                Walking.walk(new Tile(3012, 9832, 0));
-                Task.sleep(500, 600);
-            }
-        } else {
-            if(dwarvenMinesArea.contains(Players.getLocal().getLocation())) {
-                if(Summoning.getPoints() < Skills.getLevel(Skills.SUMMONING)) {
-                    SceneObject obelisk = SceneEntities.getNearest(83294);
-                    if(obelisk != null) {
-                        if(obelisk.isOnScreen()) {
-                            if(obelisk.click(true)) {
-                                Task.sleep(500, 600);
-                                while(Players.getLocal().isMoving() || Players.getLocal().getAnimation() != -1) {
-                                    Task.sleep(50, 60);
+                if(dwarvenMinesArea.contains(Players.getLocal().getLocation())) {
+                    if(Summoning.getPoints() < Skills.getLevel(Skills.SUMMONING)) {
+                        SceneObject obelisk = SceneEntities.getNearest(83294);
+                        if(obelisk != null) {
+                            if(obelisk.isOnScreen()) {
+                                if(obelisk.click(true)) {
+                                    Task.sleep(500, 600);
+                                    while(Players.getLocal().isMoving() || Players.getLocal().getAnimation() != -1) {
+                                        Task.sleep(50, 60);
+                                    }
                                 }
+                            } else {
+                                Walking.walk(obelisk.getLocation());
+                                Task.sleep(500, 600);
                             }
                         } else {
-                            Walking.walk(obelisk.getLocation());
+                            Walking.getClosestOnMap(new Tile(2977, 3409, 0)).clickOnMap();
                             Task.sleep(500, 600);
                         }
                     } else {
-                        Walking.findPath(new Tile(2977, 3409, 0)).traverse();
-                        Task.sleep(500, 600);
-                    }
-                } else {
-                    SceneObject ladder = SceneEntities.getNearest(30942);
-                    if(ladder != null) {
-                        if(ladder.isOnScreen()) {
-                            if(ladder.interact("Climb")) {
-                                Task.sleep(500, 600);
-                                while(Players.getLocal().isMoving() || Players.getLocal().getAnimation() != -1) {
-                                    Task.sleep(50, 60);
+                        SceneObject ladder = SceneEntities.getNearest(30942);
+                        if(ladder != null) {
+                            if(ladder.isOnScreen()) {
+                                if(ladder.interact("Climb")) {
+                                    Task.sleep(500, 600);
+                                    while(Players.getLocal().isMoving() || Players.getLocal().getAnimation() != -1) {
+                                        Task.sleep(50, 60);
+                                    }
                                 }
+                            } else {
+                                ShadeLRC.walk(dwarvenMinePath);
+                                Task.sleep(400, 500);
                             }
                         } else {
-                            Walking.newTilePath(dwarvenMinePath).traverse();
+                            ShadeLRC.walk(dwarvenMinePath);
                             Task.sleep(400, 500);
                         }
-                    } else {
-                        Walking.newTilePath(dwarvenMinePath).traverse();
-                        Task.sleep(400, 500);
                     }
-                }
-            } else {
-                if (!Widgets.get(1092).validate()) {
-                    Spell.HOME_TELEPORT.show();
-                    Spell.HOME_TELEPORT.getChild().click(true);
-                    Task.sleep(600, 700);
                 } else {
-                    Magic.clickLodestone(46);
-                    Task.sleep(2200, 2300);
-                    while(Players.getLocal().getAnimation() != -1) {
-                        Task.sleep(90);
+                    if (!Widgets.get(1092).validate()) {
+                        Spell.HOME_TELEPORT.show();
+                        Spell.HOME_TELEPORT.getChild().click(true);
+                        Task.sleep(600, 700);
+                    } else {
+                        Magic.clickLodestone(46);
+                        Task.sleep(2200, 2300);
+                        while(Players.getLocal().getAnimation() != -1) {
+                            Task.sleep(90);
+                        }
                     }
                 }
             }

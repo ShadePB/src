@@ -2,7 +2,7 @@ package org.shade.scripts.lrc.nodes;
 
 import org.powerbot.core.script.job.Task;
 import org.powerbot.core.script.job.state.Node;
-import org.powerbot.core.script.util.Timer;
+import org.powerbot.game.api.util.Timer;
 import org.powerbot.game.api.methods.tab.Inventory;
 import org.powerbot.game.api.wrappers.node.Item;
 import org.shade.scripts.lrc.misc.Variables;
